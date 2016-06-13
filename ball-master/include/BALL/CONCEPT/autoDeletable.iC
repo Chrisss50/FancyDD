@@ -1,0 +1,95 @@
+// -*- Mode: C++; tab-width: 2; -*-
+// vi: set ts=2:
+//
+
+BALL_INLINE 
+AutoDeletable::AutoDeletable()
+	
+{
+	if (this == last_ptr_)
+	{
+		// if it has been created using it's own
+		// new operator, it should be on the heap
+		// and can be deleted automatically
+		enabled_ = true;
+	} 
+	else 
+	{
+		// otherwise it is on the stack or part of an
+		// array - we can't delete it automatically
+		enabled_ = false;
+	}
+}
+
+BALL_INLINE 
+AutoDeletable::AutoDeletable(const AutoDeletable&, bool /* deep */)
+	
+{
+	// autodeletable object cannot be copied by default
+	// it doesn't make sense!
+	// To prevent any misuse, we behave as in the default constructor
+	if ((void*)this == last_ptr_)
+	{
+		// if it has been created using it's own
+		// new operator, it should be on the heap
+		// and can be deleted automatically
+		enabled_ = true;
+	} 
+	else 
+	{
+		// otherwise it is on the stack or part of an
+		// array - we can't delete it automatically
+		enabled_ = false;
+	}
+}
+
+BALL_INLINE 
+void AutoDeletable::operator delete (void* ptr) 
+	
+{
+	::operator delete(ptr);
+}
+
+BALL_INLINE 
+AutoDeletable::~AutoDeletable()
+	
+{
+}
+
+BALL_INLINE 
+void* AutoDeletable::operator new (size_t size) 
+	
+{
+	last_ptr_ = ::operator new(size);
+	return last_ptr_;
+}
+
+BALL_INLINE 
+void* AutoDeletable::operator new (size_t size, void* ptr) 
+	
+{
+	last_ptr_ = ::operator new (size, ptr);
+	return last_ptr_;
+}
+
+BALL_INLINE 
+void AutoDeletable::operator delete (void* ptr, void*)
+	
+{
+	::operator delete(ptr);
+}
+
+
+BALL_INLINE 
+void AutoDeletable::setAutoDeletable(bool enable)
+	
+{
+  enabled_ = enable;
+}
+
+BALL_INLINE 
+bool AutoDeletable::isAutoDeletable() const
+	
+{
+  return enabled_;
+}
