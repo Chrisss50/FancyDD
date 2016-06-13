@@ -1,1 +1,0 @@
-#cmakedefine BALL_BENCHMARK_DATA_PATH(filename) "@BALL_BENCHMARK_DATA_PATH@/" #filename
